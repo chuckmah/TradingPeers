@@ -1,0 +1,17 @@
+# This file defines all module routes (Higher priority routes first)
+#
+# import these routes in the main app as :
+# *     /                       module:tpsecurity
+#
+# ~~~~
+
+# Import Secure routes
+GET			/login			Secure.login
+GET         /authenticate   Secure.authenticate
+GET         /signin         Secure.signin
+
+GET         /logout         Secure.logout
+
+
+
+

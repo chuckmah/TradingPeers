@@ -1,0 +1,13 @@
+# Application dependencies
+
+require:
+    - play -> play [1.2.1,)
+    - play -> siena [2.0.0,)
+    - play -> gae [1.4,)
+    - play -> crudsiena [2.0.0,)
+    - play -> tpsecurity *
+    - com.restfb -> restfb 1.6.6
+    
+
+
+

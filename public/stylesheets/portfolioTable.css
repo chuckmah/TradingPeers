@@ -1,0 +1,15 @@
+table.porfolioTable
+{
+border-collapse:collapse;
+width:100%;
+}
+table.porfolioTable,th, td
+{
+border: 1px solid black;
+}
+
+
+
+table.porfolioTable tr.row_selected td {
+    background-color: #9FAFD1;
+}

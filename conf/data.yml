@@ -1,0 +1,146 @@
+# Users
+
+User(admin):
+    email:          choc_mah@hotmail.com
+    password:       G1q1q9!
+    userName:       ChuckAdmin
+    isAdmin:        true
+
+
+User(testuser_a):
+    email:          testuser_a@test.com
+    password:       "secret"
+    userName:       testA
+    isAdmin:        false
+
+User(testuser_b):
+    email:          testuser_b@test.com
+    password:       "secret"
+    userName:       testB
+    isAdmin:        false
+
+#Quotes
+
+Quote(goog):
+ symbol: "GOOG"
+ companyName: "Google Inc."
+ marketPrice: 523.538
+
+Quote(cmk_to):
+ symbol: "CMK.TO"
+ companyName: "CLINE MINING CORP"
+ marketPrice: 3.50
+
+Quote(int_v):
+ symbol: "INT.V"
+ companyName: "INTERTAINMENT MED"
+ marketPrice: 2.34
+
+Quote(yhoo):
+ symbol: "YHOO"
+ companyName: "Yahoo! Inc"
+ marketPrice: 16
+
+Quote(nlr):
+ symbol: "NLR"
+ companyName: "Market Vectors Ur"
+ marketPrice: 22
+ 
+Quote(intl):
+ symbol: "INTL"
+ companyName: "INTL FCStone Inc."
+ marketPrice: 25
+
+Quote(ort-a_v):
+ symbol: "ORT-A.V"
+ companyName: "ORBITE V.S.P.A. I"
+ marketPrice: 3.93
+
+Quote(tsla):
+ symbol: "TSLA"
+ companyName: "Tesla Motors, Inc"
+ marketPrice: 25.19
+
+# Communities
+
+Community(test):
+ name: "test"
+
+Community(test2):
+ name: "test2"
+
+Community(test3):
+ name: "test3"
+
+
+# Community Users
+
+CommunityMember(testuser_a_CommunityMember):
+ community: test
+ user: testuser_a
+ 
+CommunityMember(testuser_b_CommunityMember):
+ community: test
+ user: testuser_b
+
+
+#Portfolios A 
+ 
+Portfolio(testuser_a_portfolio):
+ user : testuser_a
+ balance: 9650
+ creationDate: 2011-04-19
+
+PortfolioEntry(testuser_a_entry1):
+ portfolio: testuser_a_portfolio
+ averagePrice: 3.50
+ quote: cmk_to
+ shareQty: 100
+
+PortfolioTransaction(testuser_a_transaction1):
+ portfolio: testuser_a_portfolio
+ quantity: 100
+ unitPrice: 3.50
+ executionDate: 2011-04-19T17:45:48.959Z
+ quote: cmk_to
+ type: BUY
+
+
+
+#Portfolios B
+
+Portfolio(testuser_b_portfolio):
+ user : testuser_b
+ balance: 178
+ creationDate: 2011-04-19
+
+ 
+PortfolioEntry(testuser_b_entry1):
+ portfolio: testuser_b_portfolio
+ averagePrice: 16
+ quote: yhoo
+ shareQty: 200
+
+PortfolioEntry(testuser_b_entry2):
+ portfolio: testuser_b_portfolio
+ averagePrice: 22
+ quote: nlr
+ shareQty: 301
+
+PortfolioTransaction(testuser_b_transaction1):
+ portfolio: testuser_b_portfolio
+ quantity: 200
+ unitPrice: 16
+ executionDate: 2011-04-19T18:08:49.200Z
+ quote: yhoo
+ type: BUY
+ 
+PortfolioTransaction(testuser_b_transaction2):
+ portfolio: testuser_b_portfolio
+ quantity: 301
+ unitPrice: 22
+ executionDate: 2011-04-19T18:09:25.771Z
+ quote: nlr
+ type: BUY 
+ 
+ 

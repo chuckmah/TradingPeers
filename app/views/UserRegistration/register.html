@@ -1,0 +1,111 @@
+#{extends 'main.html' /}
+#{set title:'TradingPeers - Register' /}
+
+#{set 'moreStyles'}
+        <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/form.css'}" />
+#{/set} 
+
+<style>
+div.buttons{
+text-align: right;
+}
+
+</style>
+
+<h3>In order to complete your registration, please fill the following form: </h3>
+
+<div id="form"> 
+#{if flash.error}
+	<div class="error">
+		&{flash.error}
+	</div>
+#{/if}
+#{else}
+	#{ifErrors}
+		<div class="error">
+			Oops and error occured…
+		</div>
+	#{/ifErrors}
+#{/else}
+
+
+
+#{form @UserRegistration.executeRegistration(),  id:'registrationForm' }
+    <fieldset>
+        <legend>Personal Information</legend>
+        
+    #{field 'newUser.userName'}
+
+            <label for="userNameInput" class="required"  accesskey="U">Username:</label> <input id="userNameInput" type="text" name="${field.name}" size="16" value="${newUser?.userName}" accesskey="U"> *
+            <span class="errorFieldMsg">${field.error}</span><br>
+            <small>Should be 4 to 20 characters, with no spaces</small>
+      
+    #{/field}
+        
+    #{field 'newUser.email'}
+
+            <label for="emailInput" class="required"  accesskey="E">Email:</label> <input id="emailInput" type="text" size="25" name="${field.name}" size="16" value="${newUser?.email}" accesskey="E"> *
+            <span class="errorFieldMsg">${field.error}</span><br>
+        	<small>Your email address is safe with us, until we're acquired.</small>
+
+        
+    #{/field}
+    
+
+    </fieldset>
+    
+    
+
+    <fieldset>
+    	    <legend>Login Information</legend>
+    	    
+    #{field 'newUser.fbId'}
+     <input type="hidden" name="${field.name}"  value="${newUser?.fbId}">
+    #{/field}
+        
+    #{field 'newUser.googleId'}
+     <input type="hidden" name="${field.name}"  value="${newUser?.googleId}">
+    #{/field}
+          
+    #{field 'newUser.password'}
+       
+            <label for="passwordInput" class="required"  accesskey="P">Password:</label> <input type="password" id="passwordInput" name="${field.name}" size="16" value="${newUser?.password}"> *
+            <span class="errorFieldMsg">${field.error}</span><br>
+       		<small>Should be 4 to 20 characters, with no spaces</small>
+    #{/field}
+    #{field 'verifyPassword'}
+        
+            <label for="passwordVerficationInput" class="required"  accesskey="V">Verify password:</label> <input id="passwordVerficationInput" type="password" name="${field.name}" size="16" value="${verifyPassword}" accesskey="V"> *
+            <span class="errorFieldMsg">${field.error}</span><br>
+         
+    #{/field}   
+
+    #{field 'remember'}
+    
+	 <input type="checkbox"  id="rememberInput" name="${field.name}" accesskey="R"  ${remember  ? 'checked="true"' :''  }/>
+	 <label for="remember" accesskey="R">Remember me</label>
+	 <span class="errorFieldMsg">${field.error}</span><br>
+   #{/field}
+
+    </fieldset>
+    
+    <div class="buttons">
+        <input id="createAccountBtn" type="submit" value="Create Account!"> 
+    </div>
+
+#{/form}
+
+</div>
+
+<script>
+
+
+
+	$(function() {
+
+		 $(document).uiforms();
+		$( "#createAccountBtn" ).button();
+	});
+	</script>
+
+

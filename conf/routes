@@ -1,0 +1,55 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Admin section
+*		/admin						  module:crudsiena
+
+
+# Import Secure routes
+*       /                             module:tpsecurity
+
+
+# Application
+GET     /                                 Home.index
+GET     /myportfolio                      MyPortfolio.index
+GET     /yaml         					  DataLoader.yaml
+GET     /dataLoad         				  DataLoader.dataLoad
+GET     /quotesRefresh                    Quotes.refreshAllQuotes
+
+GET     /myaccount      				  MyAccount.index
+
+
+#User management
+
+GET     /register                UserRegistration.register
+
+GET 	    /googleconnect/googleLogin      usermanagement.GoogleConnect.googleLogin
+GET 	    /fbconnect/fbLogin        	    usermanagement.FBConnect.fbLogin
+GET         /googleconnect/callback 	    usermanagement.GoogleConnect.callback
+GET         /fbconnect/callback 		    usermanagement.FBConnect.callback
+
+
+GET     /communities                      					Communities.index
+GET     /communities/{communityName}      					Communities.view
+GET     /communities/{communityName}/profiles/{id}          Communities.viewMember
+GET     /communities/{communityName}/quotes/{symbol}        Communities.viewQuote
+
+GET     /profiles/{id}                    Portfolios.view
+
+GET     /join/{communityName}             Communities.join
+
+
+
+
+
+
+
+# Ignore favicon requests
+GET     /favicon.ico                            404
+
+# Map static resources from the /app/public folder to the /public path
+GET     /public/                                staticDir:public
+
+# Catch all
+*       /{controller}/{action}                  {controller}.{action}

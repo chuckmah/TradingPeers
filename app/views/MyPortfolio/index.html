@@ -1,0 +1,391 @@
+#{extends 'main.html' /}
+#{set title:'TradingPeers' /}
+
+
+#{set 'moreScripts'} 
+<script src="@{'/public/javascripts/jquery.yql.js'}" type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/jquery.dataTables.js'}" type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/portfolio.js'}" type="text/javascript" charset="utf-8"></script>
+#{/set} 
+
+#{set 'moreStyles'}
+<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/portfolioTable.css'}">
+#{/set} 
+
+#{menu/}
+
+#{if portfolio != null} 
+ 
+<h2>My Portfolio</h2>
+
+
+<h3>Stocks Watch List</h3>
+
+<table class='porfolioTable' id='porfolioTableId'>
+<thead>
+	<tr>
+	<th >Symbol</th>
+	<th >Company Name</th>
+	<th field='LastTradePriceOnly'>Price</th>
+	<th field='PreviousClose'>Previous Close</th>
+	<th field='ChangeinPercent'>Change (%)</th>
+	<th field='MarketCapitalization'>Market Capitalization</th>
+	<th field='Volume'>Volume</th>
+	</tr>
+</thead>
+<tbody>
+ 
+</tbody>
+</table>
+
+<input type="text" id="addporfolioTableInputText" size="10" maxlength="10"/>
+<input type="button" id="addporfolioTableInputButton" value="Add"/>
+<input type="button" id="deleteporfolioTableButton" value="Delete"/>
+<input type="button" id="refreshporfolioTableButton" value="Refresh"/>
+
+
+<h3>Portfolio positions</h3>
+<p>Actual Portfolio Market Value : <label id="porfolioWorthLabelId"></label></p>
+
+<table class='porfolioTable' id='positionsTableId'>
+<thead>
+	<tr>
+	<th>Symbol</th>
+	<th>Company Name</th>
+	<th>Average Price</th>
+	<th field='LastTradePriceOnly'>Last Price</th>
+	<th>Change (%)</th>
+	<th># of shares</th>
+	<th>Total ($)</th>
+	</tr>
+</thead>
+<tbody>
+
+#{list items:portfolioEntries, as:'portfolioEntry'}
+<tr symbol='${portfolioEntry.quote.symbol}' positionId='${portfolioEntry.id}'>
+	<td>${portfolioEntry.quote.symbol}</td>
+	<td>${portfolioEntry.quote.companyName}</td>
+	<td dynamic='averagePrice'>${portfolioEntry.averagePrice}</td>
+	<td dynamic='positionLastPrice'></td>
+	<td dynamic='positionChange'>0.0</td>
+	<td dynamic='positionQty'>${portfolioEntry.shareQty}</td>
+	<td dynamic='positionTotal'>0.00</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+<input type="button" id="refreshPositionsTableButton" value="Refresh"/>
+ 
+<h3>Transaction</h3>
+<p>Buying power : ${portfolio.balance} $</label></p>
+
+<form action="@{addTransaction}" method="POST">
+
+
+<input type="hidden" name="portfolioId" id="portfolioIdInputHidden" value=${portfolio.id} />
+<label for='transactionSymbolInputText'>Symbol : </label> <input type="text"  name="symbol"  id="transactionSymbolInputText" size="10" maxlength="10"/>
+<label for='transactionQtyInputText'>Quantity : </label> <input type="text" name="quantity" id="transactionQtyInputText" size="10" maxlength="10"/>
+<label for='transactionTypeSelect'>Type : </label>
+<select  name="type" id="transactionTypeSelect"  >
+	 <option value="BUY">Buy</option>
+	 <option value="SELL">Sell</option>
+</select>
+<input type="submit" id="AddPortfolioInputButton" value="Execute"/>
+
+		#{if flash.error}
+			<span id="addError" >
+				Error: ${flash.error}
+			</span>
+		#{/if}
+</form>
+
+<h3>Transactions history</h3>
+ 
+<table class='porfolioTable' id='transactionsTableId'>
+<thead>
+	<tr>
+	<th>Date</th>
+	<th>Symbol</th>
+	<th>Type</th>
+	<th>Quantity</th>
+	<th>unit price</th>
+	<th>total price</th>
+	</tr>
+</thead>
+<tbody>
+
+#{list items:transactions, as:'transaction'}
+<tr>
+	<td>${transaction.executionDate}</td>
+	<td>${transaction.quote.symbol}</td>
+	<td>${transaction.type}</td>
+	<td>${transaction.quantity}</td>
+	<td>${transaction.unitPrice}</td>
+	<td>${transaction.getAmount()}</td>
+</tr>
+#{/list}
+</tbody>
+ </table>
+
+ <script  type="text/javascript" charset="utf-8">
+ $(document).ready(function() {
+
+	   //Position table
+	   oTable =	$('#positionsTableId').dataTable({
+			"bFilter": false,
+			"bPaginate": false,
+			"bSort": false,
+			"bInfo": false, 
+			"aoColumns": [
+				{ "mDataProp": "symbol" },
+				{ "mDataProp": "name" },
+				{ "mDataProp": null },
+				{ "mDataProp": null },
+				{ "mDataProp": null },
+				{ "mDataProp": null },
+				{ "mDataProp": null }
+				],
+			"oLanguage": {
+					"sEmptyTable": "No positions in portfolio"
+					}
+		} );
+	   
+	    
+	   //transactions table
+	   var oTable =	$('#transactionsTableId').dataTable({
+			"bFilter": false,
+			"bPaginate": true,
+			"aaSorting": [[ 0, "desc" ]],
+			"bSort": true,
+			"bInfo": true,
+			"oLanguage": {
+				"sEmptyTable": "No transactions"
+				}
+		} );
+	   
+
+	   
+	    retrieveWatchQuote() ;
+	    
+	    refreshPositions();
+	    
+		$('#deleteporfolioTableButton').attr("disabled", "disabled");
+	   
+	   
+		   $('#deleteporfolioTableButton').click(function(){	
+				var oTable = $('#porfolioTableId').dataTable();
+				var anSelected = fnGetSelected( oTable );
+	 			var portfolioId	= $('#portfolioIdInputHidden').val();	
+	 			
+	 			//get the selected symbol
+	 			var symbol = $("td:first",anSelected[0]).html();
+	 			
+				removeWatchQuote(symbol);		
+			});
+			
+			$("#porfolioTableId tbody").click(function(event) {
+		
+				var oTable = $('#porfolioTableId').dataTable();
+				
+				if(oTable.fnGetData().length > 0){
+					$(oTable.fnSettings().aoData).each(function (){
+						$(this.nTr).removeClass('row_selected');
+					});
+					$(event.target.parentNode).addClass('row_selected');
+					
+					$("#deleteporfolioTableButton").removeAttr("disabled");
+				}	
+			});
+			
+			$('#addporfolioTableInputButton').click(function(){
+				var symbol = $('#addporfolioTableInputText').val();
+
+	 			addWatchQuote(symbol);
+			});
+			
+			$('#refreshporfolioTableButton').click(function(){		
+				refreshTable("porfolioTableId");
+
+			});
+			
+			$('#refreshPositionsTableButton').click(function(){		
+				refreshPositions();
+			});
+			
+			
+
+ 
+
+				
+ });
+ 
+ function refreshPositions(){
+	
+	 
+		//refresh each 15 sec.
+		refreshTable("positionsTableId",function(){
+			upatePositionsTableDynamicField();
+		});
+
+		
+		/*setInterval(function() {
+			refreshTable("positionsTableId",function(){
+				upatePositionsTableDynamicField();
+			});
+		}, 15000);*/
+	} 
+ 
+ 
+ function upatePositionsTableDynamicField(){
+		
+		var portfolioValue = 0;
+		
+		$('#positionsTableId tbody tr').each(function() {
+
+			
+			var price = parseFloat($(this).children("td[dynamic='positionLastPrice']").html());
+			var averagePrice = parseFloat($(this).children("td[dynamic='averagePrice']").html());
+			var qty = parseFloat($(this).children("td[dynamic='positionQty']").html());
+			//set the change %
+			
+			
+			var change = ((price - averagePrice)/averagePrice) *100;
+			change = change.toFixed(2);
+			
+			
+			//positionChange
+			if(averagePrice > price){
+				$(this).children("td[dynamic='positionChange']").html(change+'%');
+			}else if(averagePrice < price){
+
+				$(this).children("td[dynamic='positionChange']").html('+'+change+'%');
+			}else{
+				$(this).children("td[dynamic='positionChange']").html('0%');
+			}
+			
+			//Total $
+			var total = qty*price;
+			total = total.toFixed(2);
+			$(this).children("td[dynamic='positionTotal']").html(total+'$');
+			
+			
+			portfolioValue  = parseFloat(portfolioValue) + parseFloat(total);
+
+		});
+		
+		portfolioValue = portfolioValue.toFixed(2);
+		$("#porfolioWorthLabelId").html(portfolioValue+"$");
+	}
+ 
+ function refreshWatchQuote(){
+		//refresh each 15 sec.
+		refreshTable("porfolioTableId");
+
+
+ } 
+ 
+ /*
+ Populate a table using an array of data.
+ */
+ function refreshWatchQuoteTable(dataArray){
+	 
+	 	if(dataArray == null ){
+	 		dataArray = new Array();
+	 	}
+	 	   oTable =	$('#porfolioTableId').dataTable({
+				"bFilter": false,
+				"bPaginate": false,
+				"bSort": false,
+				"bInfo": false, 
+				"aaData": dataArray,
+				"aoColumns": [
+					{ "mDataProp": "symbol" },
+					{ "mDataProp": "name" },
+					{ "mDataProp": null },
+					{ "mDataProp": null },
+					{ "mDataProp": null },
+					{ "mDataProp": null },
+					{ "mDataProp": null }
+					],
+				"oLanguage": {
+						"sEmptyTable": "Watch list is empty"
+						}
+			} );
+	 	refreshTable("porfolioTableId");
+ }
+ 
+ function retrieveWatchQuote() {
+	 
+		$.ajax({
+			type: "post",
+			url: "@{retrieveWatchQuotes()}",
+			dataType : "json",
+
+	 		error: function(xhr, ajaxOptions, thrownError){ 
+
+					alert(xhr.responseText);
+			},
+	 		success: function(data){
+
+				   refreshWatchQuoteTable(eval(data));
+
+	 		}
+		});
+	 
+
+ }
+
+ 
+ function addWatchQuote(symbol) {
+
+		$.ajax({
+			type: "post",
+			url: "@{addQuoteToWatch()}",
+			dataType : "json",
+			data: {
+	 			'symbol'		: symbol
+	 		},
+	 		error: function(xhr, ajaxOptions, thrownError){ 
+
+
+	 			alert(xhr.responseText);
+			},
+	 		success: function(data){
+	 				
+
+	 			//	refreshWatchQuoteTable(eval(data));
+	 			$('#porfolioTableId').dataTable().fnAddData( eval(data));
+	 			refreshTable("porfolioTableId");
+	 				//empty the add field.
+	 			$("#addporfolioTableInputText").val("");
+			
+	 		}
+		});
+		
+
+}
+
+ function removeWatchQuote(symbol) {
+		$.ajax({
+			type: "post",
+			url: "@{removeQuoteToWatch()}",
+			dataType : "json",
+			data: {
+				'symbol'		: symbol
+			},
+			error: function(xhr, ajaxOptions, thrownError){ 
+
+				alert(xhr.responseText);
+			},
+			success: function(data){
+				var oTable = $('#porfolioTableId').dataTable();
+				var anSelected = fnGetSelected( oTable );
+				oTable.fnDeleteRow(anSelected[0]);
+				$('#deleteporfolioTableButton').attr("disabled", "disabled");
+			}
+		});
+			
+} 
+ </script>
+ 
+ #{/if}

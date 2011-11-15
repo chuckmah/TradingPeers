@@ -1,0 +1,14 @@
+<div class="communitymenu">
+	                 %{ if(request.url.startsWith("/myportfolio")) { }%
+							My portfolio | 
+                    %{ }else{ }%
+                          <a href="@{MyPortfolio.index()}">My portfolio</a> |
+                    %{ } }%
+                    
+	                 %{ if(request.url.startsWith("/communities")) { }%
+                    	Communities
+                    %{ }else{ }%
+                   	 	<a href="@{Communities.index()}">Communities</a>
+                    %{ } }%
+
+</div>

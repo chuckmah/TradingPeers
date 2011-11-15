@@ -1,0 +1,120 @@
+#{extends 'main.html' /}
+#{set title:'TradingPeers -  Communities' /}
+#{set 'moreScripts'}
+<script src="@{'/public/javascripts/jquery.yql.js'}" type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/jquery.dataTables.js'}" type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/portfolio.js'}" type="text/javascript" charset="utf-8"></script>
+#{/set} 
+
+#{set 'moreStyles'}
+<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/portfolioTable.css'}">
+#{/set}
+
+
+#{menu/}
+
+<h1>${community.name}</h1>
+
+
+<h2>Members</h2>
+
+
+<table class='porfolioTable' id='porfolioStatsTableId'>
+	<thead>
+		<tr>
+			<th>User</th>
+			<th>stocks quantity</th>
+			<th>total of transactions</th>
+			<th>Total value ($)</th>
+			<th>Change % (since creation)</th>
+			<th>Creation date</th>
+		</tr>
+	</thead>
+	<tbody>
+
+		#{list items:portfolioStats, as:'portfolioStat'}
+		
+		<tr porfolioId='${portfolioStat.portfolio.id}'>
+			<td><a
+				href="/communities/${community.name}/profiles/${portfolioStat.portfolio.user.id}">${portfolioStat.portfolio.user.userName}</a>
+			</td>
+			<td>${portfolioStat.entriesTotal}</td>
+			<td>${portfolioStat.transactionTotal}</td>
+			<td>${portfolioStat.marketValue}</td>
+			<td>${portfolioStat.marketValueChange}</td>
+			<td>${portfolioStat.portfolio.creationDate}</td>
+		</tr>
+		#{/list}
+
+	</tbody>
+</table>
+
+<h2>Stocks</h2>
+
+<table class='porfolioTable' id='stockStatsTableId'>
+	<thead>
+		<tr>
+			<th>SymbolHidden</th>
+			<th>Symbol</th>
+			<th># of porfolios</th>
+			<th># of transactions</th>
+			<th field='LastTradePriceOnly'>Price</th>
+			<th field='PreviousClose'>PreviousClose</th>
+			<th field='ChangeinPercent'>Change %</th>
+		</tr>
+	</thead>
+	<tbody>
+
+		#{list items:communityQuotes, as:'communityQuote'}
+		<tr symbol='${communityQuote.quote.symbol}' quoteId='${communityQuote.quote.id}'>
+			<td>${communityQuote.quote.symbol}</td>
+		    <td><a href="/communities/${community.name}/quotes/${communityQuote.quote.symbol}">${communityQuote.quote.symbol}</td>
+			<td>${communityQuote.portfolioEntries.size()}</td>
+			<td>${communityQuote.portfolioTransactions.size()}</td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		#{/list}
+
+	</tbody>
+</table>
+
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+
+		//watch quote table
+		var oTable = $('#stockStatsTableId').dataTable({
+			"bFilter" : false,
+			"bPaginate" : true,
+			"aaSorting" : [ [ 1, "desc" ] ],
+			"bSort" : true,
+			"bInfo" : true,
+			"aoColumns": [
+							{ "mDataProp": "symbol" ,"bVisible": false },
+							{ "mDataProp": null },
+							{ "mDataProp": null },
+							{ "mDataProp": null },
+							{ "mDataProp": null },
+							{ "mDataProp": null },
+							{ "mDataProp": null }
+							],
+			"oLanguage": {
+								"sEmptyTable": "No stocks in community"
+								}
+		});
+
+		refreshQuotePrice();
+	});
+
+	function refreshQuotePrice() {
+		//refresh each 15 sec.
+		refreshTable("stockStatsTableId");
+
+/*		setInterval(function() {
+			refreshTable("stockStatsTableId");
+
+		}, 15000);*/
+	}
+
+ </script>

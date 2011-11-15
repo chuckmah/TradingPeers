@@ -1,0 +1,169 @@
+#{extends 'main.html' /}
+#{set title:'TradingPeers' /}
+#{set 'moreStyles'}
+        <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/secure.css'}" />
+        <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/form.css'}" />
+#{/set}
+
+
+
+<p> Welcome to TradingPeers! A Social Virtual Stock Exchange where you can share and learn trading ideas within yours friends and yours communities.<p>
+
+<div id="form"> 
+
+<center>
+
+#{if flash.error}
+	<div class="error">
+		&{flash.error}
+	</div>
+#{/if}
+#{if flash.success}
+	<div class="success">
+		&{flash.success}
+	</div>
+#{/if}
+</center>
+
+
+
+<br>
+
+
+<center> 
+<button id="fb-singin-button"   >Sign in with Facebook</button>
+</center> 
+<br>
+<br/>
+
+
+<center> 
+<button id="google-singin-button" >Sign in with Google</button>
+</center> 
+<br>
+<br/>
+
+		
+<center> 
+<button id="normal-singin-button" >Sign in with login/password</button>
+</center> 
+<br>
+
+<center>
+
+
+		<div id="dialog" title="Enter your login info... ">
+		<form action="@{Secure.authenticate}" id="loginform">
+			#{field 'userName'}
+			<label for="username">Email :</label>
+			<input type="text" name="username" id="username" value="${flash.username}" />
+			#{/field}
+			 
+			 #{field 'password'}
+			<label for="password">Password :</label>
+			<input type="password" name="password" id="password" value="" />
+			#{/field}
+			
+			#{field 'remember'}
+			<input type="hidden"  id="rememberHidden" name="remember" />
+			#{/field}
+		</form>
+
+        </div>
+
+<p id="remember-field">
+			<input type="checkbox"  id="rememberInput" name="rememberMeInput"  ${flash.remember == "true" ? 'checked="true"' :'' }/>
+			<label for="remember">Remember me</label>
+</p>
+</center> 
+
+
+<br>
+<p> Please note that we are currently under development, we may delete the database without warning! </p>
+
+
+
+</div> <!-- div form -->
+
+
+<script>
+	$(function() {
+
+		$(document).uiforms();
+		
+		$( "#fb-singin-button" ).button({
+				icons: {
+	                primary: "ui-icon-fb-connect"
+	            }
+		}).click(function(){
+			var url = "@{usermanagement.FBConnect.fbLogin()}";
+			
+			
+			if($("#rememberInput").is(':checked')){
+				
+				url = url+ "?remember=true"
+			}
+			
+			document.location.href=url;
+		});
+		
+		$( "#google-singin-button" ).button({
+			icons: {
+                primary: "ui-icon-google-connect"
+            }
+			
+		}).click(function(){
+			var url = "@{usermanagement.GoogleConnect.googleLogin()}";
+			
+			
+			if($("#rememberInput").is(':checked')){
+				
+				url = url+ "?remember=true"
+			}
+			
+			document.location.href=url;
+		});
+
+
+		$( "#dialog" ).dialog({
+			resizable: false,
+			autoOpen: false,
+
+			modal: true,
+			
+			buttons: {
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				},
+				"Log In": function() {
+					
+					
+					$( this ).dialog("close");
+					
+					if($("#rememberInput").is(':checked')){
+						
+						$("#rememberHidden").val(true);
+					}else{
+						$("#rememberHidden").val(false);
+					}
+		
+					$("#loginform").submit();
+				}
+
+			}
+		
+		});
+		
+		$( "#normal-singin-button" ).button({
+			icons: {
+                primary: "ui-icon-locked"
+            }
+			
+		}).click(function(){
+			$( "#dialog" ).dialog( "open" );
+				});
+		
+
+	});
+</script>
+	

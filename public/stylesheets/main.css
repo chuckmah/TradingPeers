@@ -1,0 +1,56 @@
+html, body {
+
+    font-family: Helvetica, Arial, Sans !important;
+}
+
+body {
+    width: 900px;
+    padding: 0 30px;
+    margin: auto;
+}
+
+#header {
+    padding: 10px 0;
+    position: relative;
+}
+
+#logo {
+
+    height: 60px;
+    
+    color: #fff;
+    font-size: 52px;
+    font-weight: bold;
+    letter-spacing: -4px;
+    text-shadow: 1px 2px 2px #000;
+}
+
+#addError {
+	 color: #FF0000;
+}
+
+#tools {
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 30px;
+    right: 20px;
+}
+
+
+/** Footer **/
+
+#footer {
+    border-top: 1px solid #45597A;
+    font-size: 70%;
+    padding: 10px 30px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+#footer a {
+    color: #869AB1;
+    font-weight: bold;
+}

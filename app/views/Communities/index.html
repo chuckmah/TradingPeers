@@ -1,0 +1,47 @@
+#{extends 'main.html' /}
+#{set title:'TradingPeers -  Communities' /}
+#{set 'moreScripts'}
+<script src="@{'/public/javascripts/jquery.yql.js'}" type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/jquery.dataTables.js'}" type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/portfolio.js'}" type="text/javascript" charset="utf-8"></script>
+#{/set} 
+
+#{set 'moreStyles'}
+<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/portfolioTable.css'}">
+#{/set}
+
+
+#{menu/}
+
+
+<h3>My Communities</h3>
+
+<table class='porfolioTable' id='communityTableId'>
+
+	#{list items:myCommunities, as:'community'}
+
+	<li><a href="./communities/${community.name}">${community.name}</a></li>
+
+	#{/list}
+
+
+<br>
+<br>
+
+<h3>Community List</h3>
+
+<table class='porfolioTable' id='communityTableId'>
+	<thead>
+		<tr><th>Community Name</th>
+		<th>Users total</th></tr>
+	</thead>
+	<tbody>
+	#{list items:communitieStats, as:'communitieStat'}
+	<tr>
+
+			<th><a href="./communities/${communitieStat.community.name}">${communitieStat.community.name}</a></th>
+			<th>${communitieStat.usersTotal}</th>
+	</tr>
+	#{/list}
+	</tbody>
+</table>

@@ -1,0 +1,95 @@
+
+
+#form form {  /* set width in form, not fieldset (still takes up more room w/ fieldset width */
+  font:100% verdana,arial,sans-serif;
+  margin: 0;
+  padding: 0;
+
+  width: 600px; 
+}
+
+#form form fieldset {
+  / * clear: both; note that this clear causes inputs to break to left in ie5.x mac, commented out */
+  border-color: #000;
+  border-width: 1px;
+  border-style: solid;
+  padding: 10px;        /* padding in fieldset support spotty in IE */
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+#form form label { 
+	display: block;  /* block float the labels to left column, set a width */
+	float: left; 
+	width: 150px; 
+	padding: 0; 
+	margin: 5px 0 0; /* set top margin same as form input - textarea etc. elements */
+	text-align: right; 
+}
+
+
+#form form fieldset label:first-letter { /* use first-letter pseudo-class to underline accesskey, note that */
+	text-decoration:underline;    /* Firefox 1.07 WIN and Explorer 5.2 Mac don't support first-letter */
+                                    /* pseudo-class on legend elements, but do support it on label elements */
+                                    /* we instead underline first letter on each label element and accesskey */
+                                    /* each input. doing only legends would  lessens cognitive load */
+                                   /* opera breaks after first letter underlined legends but not labels */
+}
+
+#form form input, form textarea {
+	/* display: inline; inline display must not be set or will hide submit buttons in IE 5x mac */
+	width:auto;      /* set width of form elements to auto-size, otherwise watch for wrap on resize */
+	margin:5px 0 0 10px; /* set margin on left of form elements rather than right of
+                              label aligns textarea better in IE */
+}
+
+#form form input#reset {
+	margin-left:0px; /* set margin-left back to zero on reset button (set above) */
+}
+
+#form textarea { overflow: auto; }
+
+#form form small {
+	display: block;
+	margin: 0 0 5px 160px; /* instructions/comments left margin set to align w/ right column inputs */
+	padding: 1px 3px;
+	font-size: 88%;
+}
+
+#form form .required{font-weight:bold;} /* uses class instead of div, more efficient */
+
+#form form br {
+	clear:left; /* setting clear on inputs didn't work consistently, so brs added for degrade */
+}
+
+#form .error {
+    color: #fff;
+    font-size: 12px;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background: #c00 !important;
+    width: 600px; 
+    margin-bottom: 20px;
+
+}
+
+#form .success {
+	color: #fff;
+    font-size: 12px;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background: #008800 !important;
+    width: 600px; 
+    margin-bottom: 20px;
+
+}
+
+#form .errorFieldMsg{
+	color: #c00;
+}
+
+
+
+

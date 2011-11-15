@@ -1,0 +1,179 @@
+#{extends 'main.html' /}
+#{set title:'TradingPeers -  Communities' /}
+#{set 'moreScripts'}
+<script src="@{'/public/javascripts/jquery.yql.js'}" type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/jquery.dataTables.js'}" type="text/javascript" charset="utf-8"></script>
+<script src="@{'/public/javascripts/portfolio.js'}" type="text/javascript" charset="utf-8"></script>
+#{/set} 
+
+#{set 'moreStyles'}
+<link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/portfolioTable.css'}">
+#{/set}
+
+
+#{menu/}
+
+<h2>${user.userName} Portfolio</h2>
+
+<h3>Positions</h3>
+<p>Remaining cash  : <label id="remainingCashLabelId">${portfolio.balance}$</label></p>
+<p>Stock Value : <label id="porfolioWorthLabelId"></label></p>
+
+<table class='porfolioTable' id='positionsTableId'>
+<thead>
+	<tr>
+	<th>Symbol</th>
+	<th>Company Name</th>
+	<th>Average Price</th>
+	<th field='LastTradePriceOnly'>Last Price</th>
+	<th>Change (%)</th>
+	<th># of shares</th>
+	<th>Total ($)</th>
+	</tr>
+</thead>
+<tbody>
+
+#{list items:portfolioEntries, as:'portfolioEntry'}
+<tr symbol='${portfolioEntry.quote.symbol}' positionId='${portfolioEntry.id}'>
+	<td>${portfolioEntry.quote.symbol}</td>
+	<td>${portfolioEntry.quote.companyName}</td>
+	<td dynamic='averagePrice'>${portfolioEntry.averagePrice}</td>
+	<td dynamic='positionLastPrice'></td>
+	<td dynamic='positionChange'>0.0</td>
+	<td dynamic='positionQty'>${portfolioEntry.shareQty}</td>
+	<td dynamic='positionTotal'>0.00</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+<input type="button" id="refreshPositionsTableButton" value="Refresh"/>
+ 
+
+<h3>Transactions history </h3>
+ 
+ <table class='porfolioTable' id='transactionsTableId'>
+<thead>
+	<tr>
+	<th>Date</th>
+	<th>Symbol</th>
+	<th>Type</th>
+	<th>Quantity</th>
+	<th>unit price</th>
+	<th>total price</th>
+	</tr>
+</thead>
+<tbody>
+
+#{list items:transactions, as:'transaction'}
+<tr>
+	<td>${transaction.executionDate}</td>
+	<td>${transaction.quote.symbol}</td>
+	<td>${transaction.type}</td>
+	<td>${transaction.quantity}</td>
+	<td>${transaction.unitPrice}</td>
+	<td>${transaction.getAmount()}</td>
+</tr>
+#{/list}
+</tbody>
+</table>
+
+ <script  type="text/javascript" charset="utf-8">
+ $(document).ready(function() {
+	 
+	 
+	   //Position table
+	   oTable =	$('#positionsTableId').dataTable({
+			"bFilter": false,
+			"bPaginate": false,
+			"bSort": false,
+			"bInfo": false, 
+			"aoColumns": [
+				{ "mDataProp": "symbol" },
+				{ "mDataProp": "name" },
+				{ "mDataProp": null },
+				{ "mDataProp": null },
+				{ "mDataProp": null },
+				{ "mDataProp": null },
+				{ "mDataProp": null }
+				],
+			"oLanguage": {
+					"sEmptyTable": "No positions in portfolio"
+					}
+		} );
+	 
+	   //transactions table
+	   var oTable =	$('#transactionsTableId').dataTable({
+			"bFilter": false,
+			"bPaginate": true,
+			"aaSorting": [[ 0, "desc" ]],
+			"bSort": true,
+			"bInfo": true,
+			"oLanguage": {
+				"sEmptyTable": "No transactions"
+				}
+		} );
+	   
+		$('#refreshPositionsTableButton').click(function(){		
+			refreshPositions();
+		});
+		
+		refreshPositions();
+ });
+ 
+ function refreshPositions(){
+		//refresh each 15 sec.
+		refreshTable("positionsTableId",function(){
+			upatePositionsTableDynamicField();
+		});
+
+		
+	/*	setInterval(function() {
+			refreshTable("positionsTableId",function(){
+				upatePositionsTableDynamicField();
+			});
+		}, 15000);*/
+	} 
+	
+	
+	function upatePositionsTableDynamicField(){
+	
+	var portfolioValue = 0;
+	
+	$('#positionsTableId tbody tr').each(function() {
+
+
+		var price = parseFloat($(this).children("td[dynamic='positionLastPrice']").html());
+		var averagePrice = parseFloat($(this).children("td[dynamic='averagePrice']").html());
+		var qty = parseFloat($(this).children("td[dynamic='positionQty']").html());
+		//set the change %
+		
+		
+		var change = ((price - averagePrice)/averagePrice) *100;
+		change = change.toFixed(2);
+		
+		
+		//positionChange
+		if(averagePrice > price){
+			$(this).children("td[dynamic='positionChange']").html(change+'%');
+		}else if(averagePrice < price){
+
+			$(this).children("td[dynamic='positionChange']").html('+'+change+'%');
+		}else{
+			$(this).children("td[dynamic='positionChange']").html('0%');
+		}
+		
+		//Total $
+		var total = qty*price;
+		total = total.toFixed(2);
+		$(this).children("td[dynamic='positionTotal']").html(total+'$');
+		
+		
+		portfolioValue  = parseFloat(portfolioValue) + parseFloat(total);
+
+	});
+	
+	portfolioValue = portfolioValue.toFixed(2);
+	$("#porfolioWorthLabelId").html(portfolioValue+"$");
+}
+
+ </script>
